@@ -9,7 +9,7 @@ services:
     environment:
       - PORT=3000
       - JWT_SECRET=dsc-investasi-jwt-secret-2026
-      - KIMI_API_KEY=sk-kimi-QKPBVidFcMycXtU5tCRcAwJmdNq5NiuPWRYa9juYllEjawoLkpmfytPjeqzgD5ch
+      - KIMI_API_KEY=sk-kimi-8w1KrOihLwySSsub0VaRvjC23hgeScYpB3dopHy1n8maAa4ALZuXmaJ9kdTbOToJ
     networks:
       - marketplace_default
     restart: unless-stopped

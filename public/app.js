@@ -154,6 +154,7 @@ const dataBulanan = [
 let chartKeuntungan = null;
 let chartPengeluaran = null;
 let chartTotalKeuntungan = null;
+let chartYoY = null;
 
 function computeTotalPem(d) {
     const lapNew = (d.pemasukanLap1 || 0) + (d.pemasukanLap2 || 0);
@@ -463,6 +464,100 @@ function renderGrafik() {
             }
         });
     }
+
+    // 4. Grafik YoY — Perbandingan Year over Year (Profit per Bulan)
+    renderChartYoY(allData);
+}
+
+function renderChartYoY(allData) {
+    const ctx4 = document.getElementById('chartYoY');
+    if (!ctx4) return;
+
+    const bulanSingkat = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    const bulanMap = {
+        'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'Mei': 4, 'Jun': 5,
+        'Jul': 6, 'Agu': 7, 'Sep': 8, 'Okt': 9, 'Nov': 10, 'Des': 11
+    };
+
+    // Group data by (bulan, tahun)
+    const grouped = {}; // { tahun: { bulanIndex: profit } }
+    allData.forEach(d => {
+        const parts = d.bulan.split(' ');
+        if (parts.length !== 2) return;
+        const bln = parts[0];
+        const thn = parts[1];
+        const idx = bulanMap[bln];
+        if (idx === undefined) return;
+        if (!grouped[thn]) grouped[thn] = {};
+        grouped[thn][idx] = computeDisplaySisa(d);
+    });
+
+    const tahunList = Object.keys(grouped).sort(); // ['2024','2025','2026']
+    // Filter: hanya tampilkan tahun yang punya >= 2 data point (supaya tidak cuma 1 bar)
+    const validTahun = tahunList.filter(t => Object.keys(grouped[t]).length >= 1);
+
+    const colors = [
+        { bg: 'rgba(57, 73, 171, 0.75)', border: 'rgba(57, 73, 171, 1)' },
+        { bg: 'rgba(239, 108, 0, 0.75)', border: 'rgba(239, 108, 0, 1)' },
+        { bg: 'rgba(46, 125, 50, 0.75)', border: 'rgba(46, 125, 50, 1)' },
+    ];
+
+    const datasets = validTahun.map((t, i) => {
+        const c = colors[i % colors.length];
+        const data = bulanSingkat.map((_, idx) => grouped[t][idx] ?? null);
+        return {
+            label: 'Tahun ' + t,
+            data: data,
+            backgroundColor: c.bg,
+            borderColor: c.border,
+            borderWidth: 1,
+            borderRadius: 6,
+            borderSkipped: false
+        };
+    });
+
+    if (chartYoY) chartYoY.destroy();
+    chartYoY = new Chart(ctx4, {
+        type: 'bar',
+        data: {
+            labels: bulanSingkat,
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: { font: { size: 12 }, usePointStyle: true }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0,0,0,0.8)',
+                    padding: 12,
+                    cornerRadius: 8,
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + formatRp(context.raw);
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: { font: { size: 12 } }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(0,0,0,0.05)' },
+                    ticks: {
+                        callback: function(value) { return 'Rp ' + (value / 1000000).toFixed(0) + 'jt'; },
+                        font: { size: 11 }
+                    }
+                }
+            }
+        }
+    });
 }
 
 let currentBulanIndex = 0;
