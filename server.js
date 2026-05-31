@@ -145,12 +145,12 @@ app.post('/api/reinvestasi', verifyToken, (req, res) => {
   res.json({ ok: true });
 });
 
-// --- Kimi AI Analisa ---
-const KIMI_API_KEY = process.env.KIMI_API_KEY || '';
+// --- DeepSeek AI Analisa ---
+const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || '';
 
 app.post('/api/analisa', verifyToken, async (req, res) => {
-  if (!KIMI_API_KEY) {
-    return res.status(500).json({ error: 'KIMI_API_KEY tidak dikonfigurasi' });
+  if (!DEEPSEEK_API_KEY) {
+    return res.status(500).json({ error: 'DEEPSEEK_API_KEY tidak dikonfigurasi' });
   }
 
   const { messages } = req.body;
@@ -159,14 +159,14 @@ app.post('/api/analisa', verifyToken, async (req, res) => {
   }
 
   try {
-    const response = await fetch('https://api.moonshot.cn/v1/chat/completions', {
+    const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + KIMI_API_KEY
+        'Authorization': 'Bearer ' + DEEPSEEK_API_KEY
       },
       body: JSON.stringify({
-        model: 'moonshot-v1-8k',
+        model: 'deepseek-chat',
         messages: [
           { role: 'system', content: 'Kamu adalah AI Financial Advisor untuk bisnis lapangan futsal DSC. Berikan analisis keuangan yang praktis, realistis, dan actionable dalam Bahasa Indonesia. Format gunakan heading, bullet points, dan angka rupiah yang jelas.' },
           ...messages
@@ -177,7 +177,7 @@ app.post('/api/analisa', verifyToken, async (req, res) => {
 
     const data = await response.json();
     if (!response.ok) {
-      return res.status(502).json({ error: data.error?.message || 'Kimi API error' });
+      return res.status(502).json({ error: data.error?.message || 'DeepSeek API error' });
     }
 
     res.json({ reply: data.choices?.[0]?.message?.content || 'Tidak ada respons dari AI.' });
