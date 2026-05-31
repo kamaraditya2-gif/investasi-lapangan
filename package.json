@@ -1,0 +1,16 @@
+{
+  "name": "investasi-lapangan",
+  "version": "1.0.0",
+  "description": "Investasi Lapangan DSC - Backend with SQLite",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "better-sqlite3": "^11.3.0",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5"
+  }
+}

@@ -1,0 +1,18 @@
+services:
+  investasi-lapangan:
+    build: .
+    container_name: investasi-lapangan
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - PORT=3000
+      - JWT_SECRET=dsc-investasi-jwt-secret-2026
+    networks:
+      - marketplace_default
+    restart: unless-stopped
+
+networks:
+  marketplace_default:
+    external: true

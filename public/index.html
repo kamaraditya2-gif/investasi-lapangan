@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investasi Lapangan - DSC</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <!-- Login Overlay -->
+    <div id="login-overlay" class="login-overlay">
+        <div class="login-card">
+            <h2>🔐 Login Admin</h2>
+            <p class="login-sub">Investasi Lapangan DSC</p>
+            <div class="input-group">
+                <label>Username</label>
+                <input type="text" id="loginUsername" placeholder="admin" value="admin">
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" placeholder="Password">
+            </div>
+            <button onclick="doLogin()" class="btn-simpan" style="width:100%">Login</button>
+            <div id="loginError" class="login-error"></div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="main-app" style="display:none">
+        <div class="container">
+            <div class="header-bar">
+                <h1>📊 Investasi Lapangan DSC</h1>
+                <button onclick="doLogout()" class="btn-logout">🚪 Logout</button>
+            </div>
+
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('tab1')" id="btn-tab1">💰 Modal DSC 1</button>
+                <button class="tab-btn" onclick="switchTab('tab2')" id="btn-tab2">📈 Pengembalian Modal</button>
+            </div>
+
+            <!-- TAB 1: Modal DSC 1 -->
+            <div id="tab1" class="tab-content active">
+                <div class="section">
+                    <h2>Modal DSC 1</h2>
+                    <div class="table-scroll">
+                        <table id="tabelModalDSC1">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Tanggal</th>
+                                    <th>Nominal</th>
+                                    <th>Rekening</th>
+                                    <th>Keterangan</th>
+                                    <th>Lapangan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>1</td><td>18-Okt-24</td><td data-nominal="15000000">Rp 15.000.000</td><td>Jhony Mery</td><td>Uang Muka Vendor</td><td>Lapangan 1</td></tr>
+                                <tr><td>2</td><td>24-Okt-24</td><td data-nominal="200000000">Rp 200.000.000</td><td>Ridwan</td><td>Uang Muka Lapangan</td><td>Lapangan 1</td></tr>
+                                <tr><td>3</td><td>24-Okt-24</td><td data-nominal="85000000">Rp 85.000.000</td><td>Jhony Mery</td><td>Termin 1 Vendor</td><td>Lapangan 1</td></tr>
+                                <tr><td>4</td><td>29-Okt-24</td><td data-nominal="100000000">Rp 100.000.000</td><td>Jhony Mery</td><td>Termin 2 Vendor</td><td>Lapangan 1</td></tr>
+                                <tr><td>5</td><td>29-Okt-24</td><td data-nominal="3500000">Rp 3.500.000</td><td>Jhony Mery</td><td>Pembelian Lampu</td><td>Lapangan 1</td></tr>
+                                <tr><td>6</td><td>04-Nov-24</td><td data-nominal="5000000">Rp 5.000.000</td><td>Aditya Putra</td><td>Cat Termin 1</td><td>Lapangan 1</td></tr>
+                                <tr><td>7</td><td>06-Nov-24</td><td data-nominal="3000000">Rp 3.000.000</td><td>Aditya Putra</td><td>Cat Termin 2</td><td>Lapangan 1</td></tr>
+                                <tr><td>8</td><td>06-Nov-24</td><td data-nominal="3750000">Rp 3.750.000</td><td>Aditya Putra</td><td>Cat Termin 3</td><td>Lapangan 1</td></tr>
+                                <tr><td>9</td><td>07-Nov-24</td><td data-nominal="18000000">Rp 18.000.000</td><td>Jhony Mery</td><td>Termin 3 Vendor</td><td>Lapangan 1</td></tr>
+                                <tr><td>10</td><td>10-Nov-24</td><td data-nominal="15000000">Rp 15.000.000</td><td>Kama Raditya</td><td>Score Board Lengkap</td><td>Lapangan 1</td></tr>
+                                <tr><td>11</td><td>10-Nov-24</td><td data-nominal="25000000">Rp 25.000.000</td><td>Kama Raditya</td><td>Peralatan Kebersihan</td><td>Lapangan 1</td></tr>
+                                <tr><td>12</td><td>12-Nov-24</td><td data-nominal="100000000">Rp 100.000.000</td><td>Jhony Mery</td><td>Termin 3 Vendor</td><td>Lapangan 1</td></tr>
+                                <tr><td>13</td><td>15-Nov-24</td><td data-nominal="350000000">Rp 350.000.000</td><td>Ridwan</td><td>Sisa Pelunasan Lapangan</td><td>Lapangan 1</td></tr>
+                                <tr><td>14</td><td>15-Nov-24</td><td data-nominal="10000000">Rp 10.000.000</td><td>Aditya Putra</td><td>Printilan Kebersihan</td><td>Lapangan 1</td></tr>
+                                <tr><td>15</td><td>15-Nov-24</td><td data-nominal="5000000">Rp 5.000.000</td><td>Aditya Putra</td><td></td><td>Lapangan 1</td></tr>
+                                <tr><td>16</td><td>15-Nov-24</td><td data-nominal="-5000000">-Rp 5.000.000</td><td>Kama Raditya</td><td></td><td>Lapangan 1</td></tr>
+                                <tr><td>17</td><td>17-Nov-24</td><td data-nominal="135000000">Rp 135.000.000</td><td>Ridwan</td><td>Sisa Pelunasan Lapangan</td><td>Lapangan 1</td></tr>
+                                <tr><td>18</td><td>24-Nov-24</td><td data-nominal="2500000">Rp 2.500.000</td><td>Aditya Putra</td><td></td><td>Lapangan 1</td></tr>
+                                <tr><td>19</td><td>26-Nov-24</td><td data-nominal="500000">Rp 500.000</td><td>Kama Raditya</td><td></td><td>Lapangan 1</td></tr>
+                                <tr><td>20</td><td>26-Nov-24</td><td data-nominal="36000000">Rp 36.000.000</td><td>Ridwan</td><td>Sewa Kantor Depan</td><td>Lapangan 1</td></tr>
+                                <tr><td>21</td><td>30-Nov-24</td><td data-nominal="27500000">Rp 27.500.000</td><td>Adit Mooks</td><td>Exhaust Fan, Kipas, dll</td><td>Lapangan 1</td></tr>
+                                <tr><td>22</td><td>30-Nov-24</td><td data-nominal="15000000">Rp 15.000.000</td><td>Kama Raditya</td><td>AC</td><td>Lapangan 1</td></tr>
+                                <tr><td>23</td><td>12-Des-24</td><td data-nominal="15000000">Rp 15.000.000</td><td>Kama Raditya</td><td>AC</td><td>Lapangan 1</td></tr>
+                                <tr><td>24</td><td>10-Jan-25</td><td data-nominal="75000000">Rp 75.000.000</td><td>Jhon Mery</td><td></td><td>Lapangan 2</td></tr>
+                                <tr><td>25</td><td>10-Jan-25</td><td data-nominal="150000000">Rp 150.000.000</td><td>Ridwan</td><td></td><td>Lapangan 2</td></tr>
+                                <tr><td>26</td><td>12-Jan-25</td><td data-nominal="10000000">Rp 10.000.000</td><td>Jhon Mery</td><td></td><td>Lapangan 2</td></tr>
+                                <tr><td>27</td><td>19-Jan-25</td><td data-nominal="75000000">Rp 75.000.000</td><td>Jhon Mery</td><td></td><td>Lapangan 2</td></tr>
+                                <tr><td>28</td><td>29-Jan-25</td><td data-nominal="250000000">Rp 250.000.000</td><td>Ridwan</td><td></td><td>Lapangan 2</td></tr>
+                                <tr><td>29</td><td>3-Feb-25</td><td data-nominal="75000000">Rp 75.000.000</td><td>Jhon Mery</td><td></td><td>Lapangan 2</td></tr>
+                                <tr><td>30</td><td>5-Feb-25</td><td data-nominal="5000000">Rp 5.000.000</td><td>Kama Raditya</td><td></td><td>Lapangan 2</td></tr>
+                                <tr><td>31</td><td>16-Feb-25</td><td data-nominal="219920000">Rp 219.920.000</td><td>Ridwan</td><td></td><td>Lapangan 2</td></tr>
+                                <tr><td>32</td><td>23-Feb-25</td><td data-nominal="-60000000">-Rp 60.000.000</td><td>Jhon Mery</td><td>Pake Uang Galih Dulu</td><td>Lapangan 2</td></tr>
+                                <tr><td>33</td><td>23-Feb-25</td><td data-nominal="25000000">Rp 25.000.000</td><td>Jhon Mery</td><td></td><td>Lapangan 2</td></tr>
+                                <tr><td>34</td><td>28-Feb-25</td><td data-nominal="41000000">Rp 41.000.000</td><td>Jhon Mery</td><td></td><td>Lapangan 2</td></tr>
+                                <tr><td>35</td><td>8-Mar-25</td><td data-nominal="20000000">Rp 20.000.000</td><td>Kama Raditya</td><td>Bayar Hutang Galih</td><td>Lapangan 2</td></tr>
+                                <tr><td>36</td><td>15-Mar-25</td><td data-nominal="20000000">Rp 20.000.000</td><td>Kama Raditya</td><td>Bayar Hutang Galih</td><td>Lapangan 2</td></tr>
+                                <tr><td>37</td><td>19-Mar-25</td><td data-nominal="20000000">Rp 20.000.000</td><td>Kama Raditya</td><td>Bayar Hutang Galih</td><td>Lapangan 2</td></tr>
+                                <tr><td>38</td><td>19-Mar-25</td><td data-nominal="15000000">Rp 15.000.000</td><td>Kama Raditya</td><td></td><td>Lapangan 2</td></tr>
+                                <tr><td>39</td><td>25-Mar-25</td><td data-nominal="10000000">Rp 10.000.000</td><td>Tokped</td><td>3 Exhaust</td><td>Lapangan 2</td></tr>
+                                <tr><td>40</td><td>26-Mar-25</td><td data-nominal="5000000">Rp 5.000.000</td><td>Tokped</td><td>4 Kipas</td><td>Lapangan 2</td></tr>
+                                <tr><td>41</td><td>27-Mar-25</td><td data-nominal="20000000">Rp 20.000.000</td><td>Kama Raditya</td><td></td><td>Lapangan 2</td></tr>
+                            </tbody>
+                            <tfoot>
+                                <tr style="font-weight:700;background:#fff3e0">
+                                    <td colspan="2">Total Lapangan 1</td>
+                                    <td id="totalLapangan1">-</td>
+                                    <td colspan="3"></td>
+                                </tr>
+                                <tr style="font-weight:700;background:#e3f2fd">
+                                    <td colspan="2">Total Lapangan 2</td>
+                                    <td id="totalLapangan2">-</td>
+                                    <td colspan="3"></td>
+                                </tr>
+                                <tr style="font-weight:700;background:#e8eaf6">
+                                    <td colspan="2">Total Modal</td>
+                                    <td id="totalModalDSC1">-</td>
+                                    <td colspan="3"></td>
+                                </tr>
+                                <tr style="font-weight:700;background:#c8e6c9">
+                                    <td colspan="2">Total Bersih</td>
+                                    <td id="totalBersihDSC1">-</td>
+                                    <td colspan="3">(setelah dikurangi Rp 432.000.000)</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: Pengembalian Modal -->
+            <div id="tab2" class="tab-content">
+                <div class="section">
+                    <h2>📋 Pengembalian Modal Per Bulan</h2>
+                    <div class="table-scroll">
+                        <table id="tabelPengembalian">
+                            <thead>
+                                <tr>
+                                    <th>Bulan</th>
+                                    <th>Pemasukan Lap 1</th>
+                                    <th>Pemasukan Lap 2</th>
+                                    <th>Pemasukan Kantin</th>
+                                    <th>Total Pemasukan</th>
+                                    <th>Pengeluaran Op</th>
+                                    <th>Pengeluaran Investor</th>
+                                    <th>Reinvestasi</th>
+                                    <th>Total Pengeluaran</th>
+                                    <th>Sisa / Profit</th>
+                                    <th>Total Kumulatif</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bodyPengembalian"></tbody>
+                            <tfoot>
+                                <tr>
+                                    <td>Total</td>
+                                    <td id="totPemasukanLap1">-</td>
+                                    <td id="totPemasukanLap2">-</td>
+                                    <td id="totPemasukanKan">-</td>
+                                    <td id="totPemasukan">-</td>
+                                    <td id="totPengeluaranOp">-</td>
+                                    <td id="totPengeluaranInv">-</td>
+                                    <td id="totReinvestasi">-</td>
+                                    <td id="totPengeluaran">-</td>
+                                    <td id="totSisa">-</td>
+                                    <td id="totKumulatif">-</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Grafik Section -->
+                <div class="section">
+                    <h2>📊 Grafik Keuangan</h2>
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <div class="chart-title">Keuntungan per Bulan</div>
+                            <div class="chart-wrapper">
+                                <canvas id="chartKeuntungan"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">Pengeluaran per Bulan</div>
+                            <div class="chart-wrapper">
+                                <canvas id="chartPengeluaran"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card chart-full">
+                            <div class="chart-title">Total Keuntungan Kumulatif</div>
+                            <div class="chart-wrapper">
+                                <canvas id="chartTotalKeuntungan"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reinvestasi Card -->
+                <div class="section">
+                    <h2>💰 Reinvestasi</h2>
+                    <div class="reinvest-card">
+                        <div class="reinvest-item reinvest-total">
+                            <div class="reinvest-label">Total Reinvestasi Kumulatif</div>
+                            <div class="reinvest-value" id="reinvestTotal">-</div>
+                        </div>
+                        <div class="reinvest-grid">
+                            <div class="reinvest-item">
+                                <div class="reinvest-label">Putaran Investasi Adit (Rp)</div>
+                                <input type="number" id="inputReinvestAdit" placeholder="0" onchange="simpanReinvestasi()">
+                            </div>
+                            <div class="reinvest-item">
+                                <div class="reinvest-label">Putaran Investasi Kama (Rp)</div>
+                                <input type="number" id="inputReinvestKama" placeholder="0" onchange="simpanReinvestasi()">
+                            </div>
+                        </div>
+                        <div class="reinvest-item reinvest-grand">
+                            <div class="reinvest-label">Total Adit + Kama</div>
+                            <div class="reinvest-value" id="reinvestGrandTotal">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>✏️ Input Bulan Berikutnya</h2>
+                    <div class="grid-inputs">
+                        <div class="input-group">
+                            <label>Bulan</label>
+                            <select id="inputBulan">
+                                <option value="Mei 2026">Mei 2026</option>
+                                <option value="Jun 2026">Jun 2026</option>
+                                <option value="Jul 2026">Jul 2026</option>
+                                <option value="Agu 2026">Agu 2026</option>
+                                <option value="Sep 2026">Sep 2026</option>
+                                <option value="Okt 2026">Okt 2026</option>
+                                <option value="Nov 2026">Nov 2026</option>
+                                <option value="Des 2026">Des 2026</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Pemasukan Lap 1 (Rp)</label>
+                            <input type="number" id="inputPemasukanLap1" placeholder="0">
+                        </div>
+                        <div class="input-group">
+                            <label>Pemasukan Lap 2 (Rp)</label>
+                            <input type="number" id="inputPemasukanLap2" placeholder="0">
+                        </div>
+                        <div class="input-group">
+                            <label>Pemasukan Kantin (Rp)</label>
+                            <input type="number" id="inputPemasukanKan" placeholder="0">
+                        </div>
+                        <div class="input-group">
+                            <label>Pengeluaran Operasional (Rp)</label>
+                            <input type="number" id="inputPengeluaranOp" placeholder="0">
+                        </div>
+                        <div class="input-group">
+                            <label>Keuntungan Kama (Rp)</label>
+                            <input type="number" id="inputKama" placeholder="0">
+                        </div>
+                        <div class="input-group">
+                            <label>Keuntungan Kiki (Rp)</label>
+                            <input type="number" id="inputKiki" placeholder="0">
+                        </div>
+                        <div class="input-group">
+                            <label>Keuntungan Adit (Rp)</label>
+                            <input type="number" id="inputAdit" placeholder="0">
+                        </div>
+                        <div class="input-group">
+                            <label>Keuntungan Pemodal (Rp)</label>
+                            <input type="number" id="inputKeuntunganPemodal" placeholder="0">
+                        </div>
+                        <div class="input-group">
+                            <label>Pemasukan Pengembalian Modal (Rp)</label>
+                            <input type="number" id="inputPengembalianModal" placeholder="0">
+                        </div>
+                    </div>
+                    <button onclick="simpanBulanBaru()" class="btn-simpan">💾 Simpan Data Bulan</button>
+                    <div id="inputNotif" class="notif-sukses">✅ Data tersimpan!</div>
+                </div>
+
+                <div class="section">
+                    <h2>📝 Data Input Bulan Berikutnya</h2>
+                    <div class="table-scroll">
+                        <table id="tabelInputBulan">
+                            <thead>
+                                <tr>
+                                    <th>Bulan</th>
+                                    <th>Lap 1</th>
+                                    <th>Lap 2</th>
+                                    <th>Kantin</th>
+                                    <th>Pengeluaran Op</th>
+                                    <th>Kama</th>
+                                    <th>Kiki</th>
+                                    <th>Adit</th>
+                                    <th>Keuntungan Pemodal</th>
+                                    <th>Pengembalian Modal</th>
+                                    <th>Total Pengeluaran</th>
+                                    <th>Sisa</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bodyInputBulan"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>📅 Kalender Bulanan</h2>
+                    <div class="calendar-controls">
+                        <button onclick="prevBulan()">&#9664;</button>
+                        <h3 id="bulanTahunLabel"></h3>
+                        <button onclick="nextBulan()">&#9654;</button>
+                    </div>
+                    <div id="kalenderBulanan" class="calendar-month"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
