@@ -145,6 +145,47 @@ app.post('/api/reinvestasi', verifyToken, (req, res) => {
   res.json({ ok: true });
 });
 
+// --- Kimi AI Analisa ---
+const KIMI_API_KEY = process.env.KIMI_API_KEY || '';
+
+app.post('/api/analisa', verifyToken, async (req, res) => {
+  if (!KIMI_API_KEY) {
+    return res.status(500).json({ error: 'KIMI_API_KEY tidak dikonfigurasi' });
+  }
+
+  const { messages } = req.body;
+  if (!messages || !Array.isArray(messages)) {
+    return res.status(400).json({ error: 'Messages array wajib diisi' });
+  }
+
+  try {
+    const response = await fetch('https://api.moonshot.cn/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + KIMI_API_KEY
+      },
+      body: JSON.stringify({
+        model: 'moonshot-v1-8k',
+        messages: [
+          { role: 'system', content: 'Kamu adalah AI Financial Advisor untuk bisnis lapangan futsal DSC. Berikan analisis keuangan yang praktis, realistis, dan actionable dalam Bahasa Indonesia. Format gunakan heading, bullet points, dan angka rupiah yang jelas.' },
+          ...messages
+        ],
+        temperature: 0.7
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      return res.status(502).json({ error: data.error?.message || 'Kimi API error' });
+    }
+
+    res.json({ reply: data.choices?.[0]?.message?.content || 'Tidak ada respons dari AI.' });
+  } catch (e) {
+    res.status(500).json({ error: 'Gagal menghubungi AI: ' + e.message });
+  }
+});
+
 // Serve index.html for any non-API route (SPA fallback)
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));

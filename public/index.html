@@ -193,6 +193,29 @@
                     </div>
                 </div>
 
+                <!-- Analisa AI Card -->
+                <div class="section">
+                    <h2>🤖 Analisa AI</h2>
+                    <div class="ai-card">
+                        <div class="ai-header">
+                            <p class="ai-desc">Tanya AI tentang strategi keuangan, pengembalian modal, atau sewa lapangan. Klik <b>Generate</b> untuk analisis otomatis berdasarkan data terkini.</p>
+                            <button onclick="generateAnalisaAI()" id="btnGenerateAI" class="btn-ai-generate">✨ Generate Analisis</button>
+                        </div>
+                        <div id="aiLoading" class="ai-loading" style="display:none">
+                            <div class="ai-spinner"></div>
+                            <span>AI sedang menganalisis data...</span>
+                        </div>
+                        <div id="aiResultBox" class="ai-result-box" style="display:none"></div>
+                        <div id="aiChatArea" class="ai-chat-area" style="display:none">
+                            <div id="aiChatMessages" class="ai-chat-messages"></div>
+                            <div class="ai-chat-input">
+                                <input type="text" id="aiChatInput" placeholder="Tanya sesuatu tentang investasi..." onkeydown="if(event.key==='Enter')sendAIChat()">
+                                <button onclick="sendAIChat()" class="btn-ai-send">Kirim</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Reinvestasi Card -->
                 <div class="section">
                     <h2>💰 Reinvestasi</h2>

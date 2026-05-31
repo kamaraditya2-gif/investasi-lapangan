@@ -100,6 +100,8 @@ function formatRp(n) {
     return 'Rp ' + n.toLocaleString('id-ID');
 }
 
+let modalSummary = { total: 0, lap1: 0, lap2: 0, bersih: 0 };
+
 function hitungModalDSC1() {
     const rows = document.querySelectorAll('#tabelModalDSC1 tbody tr');
     let total = 0, totalLap1 = 0, totalLap2 = 0;
@@ -116,6 +118,7 @@ function hitungModalDSC1() {
             }
         }
     });
+    modalSummary = { total, lap1: totalLap1, lap2: totalLap2, bersih: total - 432000000 };
     const totalEl = document.getElementById('totalModalDSC1');
     const bersihEl = document.getElementById('totalBersihDSC1');
     const lap1El = document.getElementById('totalLapangan1');
@@ -727,6 +730,167 @@ function updateReinvestasiDisplay() {
     const elGrand = document.getElementById('reinvestGrandTotal');
     if (elTotal) elTotal.textContent = formatRp(totalReinvestasi);
     if (elGrand) elGrand.textContent = formatRp(grandTotal);
+}
+
+// --- AI Analisa ---
+let aiChatHistory = [];
+
+function gatherFinancialSummary() {
+    const allData = getDataGabungan();
+    const closedData = allData.filter(d => d.status === 'closed' || d.status === 'running');
+    const n = closedData.length || 1;
+
+    let totRevenue = 0, totProfit = 0, totOp = 0, totInv = 0;
+    closedData.forEach(d => {
+        totRevenue += d.totalPem;
+        totProfit += computeDisplaySisa(d);
+        totOp += d.pengeluaranOp;
+        totInv += d.pengeluaranInv;
+    });
+
+    return {
+        totalModal: modalSummary.total,
+        totalModalLap1: modalSummary.lap1,
+        totalModalLap2: modalSummary.lap2,
+        totalBersih: modalSummary.bersih,
+        avgRevenuePerMonth: Math.round(totRevenue / n),
+        avgProfitPerMonth: Math.round(totProfit / n),
+        avgOpPerMonth: Math.round(totOp / n),
+        avgInvPerMonth: Math.round(totInv / n),
+        totalRevenue: totRevenue,
+        totalProfit: totProfit,
+        monthsCount: n,
+        reinvestasiAdit: apiReinvestasi.adit || 0,
+        reinvestasiKama: apiReinvestasi.kama || 0,
+        currentDate: 'Mei 2026'
+    };
+}
+
+async function generateAnalisaAI() {
+    const btn = document.getElementById('btnGenerateAI');
+    const loading = document.getElementById('aiLoading');
+    const resultBox = document.getElementById('aiResultBox');
+    const chatArea = document.getElementById('aiChatArea');
+
+    btn.disabled = true;
+    loading.style.display = 'flex';
+    resultBox.style.display = 'none';
+
+    const s = gatherFinancialSummary();
+
+    const promptText = `Analisis data keuangan DSC berikut dan berikan strategi concrete:
+
+**DATA KEUANGAN:**
+- Total Modal Lapangan 1: ${formatRp(s.totalModalLap1)}
+- Total Modal Lapangan 2: ${formatRp(s.totalModalLap2)}
+- Total Modal Keseluruhan: ${formatRp(s.totalModal)}
+- Total Modal Bersih (setelah dikurangi Rp 432jt): ${formatRp(s.totalBersih)}
+- Rata-rata Revenue per Bulan (${s.monthsCount} bulan): ${formatRp(s.avgRevenuePerMonth)}
+- Rata-rata Profit per Bulan: ${formatRp(s.avgProfitPerMonth)}
+- Rata-rata Pengeluaran Operasional per Bulan: ${formatRp(s.avgOpPerMonth)}
+- Rata-rata Pengeluaran Investor per Bulan: ${formatRp(s.avgInvPerMonth)}
+- Total Revenue Kumulatif: ${formatRp(s.totalRevenue)}
+- Total Profit Kumulatif: ${formatRp(s.totalProfit)}
+- Reinvestasi Adit: ${formatRp(s.reinvestasiAdit)}
+- Reinvestasi Kama: ${formatRp(s.reinvestasiKama)}
+
+**PERTANYAAN STRATEGIS:**
+Bagaimana cara membayar uang sewa/modal lapangan selama 24 bulan ke depan untuk:
+- Lapangan 1 (dimulai Nov 2024, sewa kantor depan Rp 36jt per 2 tahun)
+- Lapangan 2 (dimulai Feb 2025, termin pelunasan)
+
+Sambil mempertahankan:
+1. Pengembalian modal pelan-pelan ke investor
+2. Keuntungan operasional tetap berjalan
+3. Cash flow tetap sehat
+
+Berikan dalam format:
+1. **Ringkasan Situasi** (2-3 paragraf)
+2. **Rekomendasi Strategi** (bullet points, dengan angka rupiah)
+3. **Alokasi Bulanan yang Dianjurkan** (tabel/poin)
+4. **Milestone per Kuartal** (Q1-Q8 untuk 2 tahun)
+5. **Risiko & Mitigasi**
+6. **Action Items Prioritas** (5 poin)`;
+
+    try {
+        const data = await apiFetch('/api/analisa', {
+            method: 'POST',
+            body: JSON.stringify({ messages: [{ role: 'user', content: promptText }] })
+        });
+
+        resultBox.style.display = 'block';
+        resultBox.innerHTML = formatAIResponse(data.reply);
+        chatArea.style.display = 'flex';
+
+        // Reset chat history dengan system context
+        aiChatHistory = [
+            { role: 'system', content: `Konteks data DSC: Total Modal=${s.totalModal}, Avg Revenue/Bulan=${s.avgRevenuePerMonth}, Avg Profit/Bulan=${s.avgProfitPerMonth}. Analisis sebelumnya: ${data.reply.substring(0, 2000)}` },
+            { role: 'user', content: promptText },
+            { role: 'assistant', content: data.reply }
+        ];
+
+        // Tampilkan pesan awal di chat
+        const chatMessages = document.getElementById('aiChatMessages');
+        chatMessages.innerHTML = `<div class="ai-msg ai-msg-ai">${formatAIResponse(data.reply)}</div>`;
+
+    } catch (e) {
+        resultBox.style.display = 'block';
+        resultBox.innerHTML = `<div style="color:#c62828;font-weight:700">❌ Gagal: ${e.message}</div>`;
+    } finally {
+        btn.disabled = false;
+        loading.style.display = 'none';
+    }
+}
+
+function formatAIResponse(text) {
+    // Simple markdown-like formatting
+    let html = text
+        .replace(/### (.*)/g, '<h3>$1</h3>')
+        .replace(/## (.*)/g, '<h3>$1</h3>')
+        .replace(/# (.*)/g, '<h3>$1</h3>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/^- (.*)/gm, '<li>$1</li>')
+        .replace(/<li>(.*?)<\/li>(\s*<li>)/g, '<li>$1</li>$2')
+        .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+    return html;
+}
+
+async function sendAIChat() {
+    const inputEl = document.getElementById('aiChatInput');
+    const text = inputEl.value.trim();
+    if (!text) return;
+
+    const chatMessages = document.getElementById('aiChatMessages');
+    const chatArea = document.getElementById('aiChatArea');
+
+    // Tambah pesan user
+    chatMessages.innerHTML += `<div class="ai-msg ai-msg-user">${escapeHtml(text)}</div>`;
+    inputEl.value = '';
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    // Tambah ke history
+    aiChatHistory.push({ role: 'user', content: text });
+
+    try {
+        const data = await apiFetch('/api/analisa', {
+            method: 'POST',
+            body: JSON.stringify({ messages: aiChatHistory })
+        });
+
+        aiChatHistory.push({ role: 'assistant', content: data.reply });
+        chatMessages.innerHTML += `<div class="ai-msg ai-msg-ai">${formatAIResponse(data.reply)}</div>`;
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    } catch (e) {
+        chatMessages.innerHTML += `<div class="ai-msg ai-msg-ai" style="color:#c62828">❌ Error: ${e.message}</div>`;
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 // --- Init ---
