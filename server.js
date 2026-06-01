@@ -168,7 +168,7 @@ app.post('/api/analisa', verifyToken, async (req, res) => {
       body: JSON.stringify({
         model: 'deepseek-chat',
         messages: [
-          { role: 'system', content: 'Kamu adalah AI Financial Advisor untuk bisnis lapangan futsal DSC. Berikan analisis keuangan yang praktis, realistis, dan actionable dalam Bahasa Indonesia. Format gunakan heading, bullet points, dan angka rupiah yang jelas.' },
+          { role: 'system', content: 'Kamu adalah AI Financial Advisor untuk bisnis lapangan futsal DSC. Modal sewa lapangan untuk 2 tahun adalah Rp 1.300.000.000 (1,3 Miliar). Berikan analisis keuangan yang praktis, realistis, dan actionable dalam Bahasa Indonesia. Format gunakan heading, bullet points, dan angka rupiah yang jelas.' },
           ...messages
         ],
         temperature: 0.7

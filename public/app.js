@@ -972,6 +972,7 @@ async function generateAnalisaAI() {
 - Total Modal Lapangan 2: ${formatRp(s.totalModalLap2)}
 - Total Modal Keseluruhan: ${formatRp(s.totalModal)}
 - Total Modal Bersih (setelah dikurangi Rp 432jt): ${formatRp(s.totalBersih)}
+- **Modal Sewa Lapangan 2 Tahun: Rp 1.300.000.000**
 - Rata-rata Revenue per Bulan (${s.monthsCount} bulan): ${formatRp(s.avgRevenuePerMonth)}
 - Rata-rata Profit per Bulan: ${formatRp(s.avgProfitPerMonth)}
 - Rata-rata Pengeluaran Operasional per Bulan: ${formatRp(s.avgOpPerMonth)}
